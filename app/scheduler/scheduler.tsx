@@ -1,10 +1,18 @@
 import chibiSunny from "./chibi_sunny.png";
-import { data } from "./data";
+import { scheduleData } from "./data";
 import React, { useState, useCallback, useRef } from "react";
-import { toPng } from "html-to-image";
+import { toPng } from "@jpinsonneau/html-to-image";
+import { PickerPanel } from "rc-picker";
+import type { Moment } from "moment";
+import moment from "moment";
+import enUS from "rc-picker/lib/locale/en_US";
+import momentGenerateConfig from "rc-picker/lib/generate/moment";
+import 'rc-picker/assets/index.css';
+
+type ScheduleItem = { date: Moment; title: string; color: string };
 
 export function Scheduler() {
-  const [items, setItems] = useState(data);
+  const [items, setItems] = useState(scheduleData);
   const ref = useRef<HTMLDivElement>(null);
 
   const handleDownload = useCallback(() => {
@@ -53,8 +61,6 @@ export function Scheduler() {
   );
 }
 
-type ScheduleItem = { date: string; time: string; title: string; color: string };
-
 function Schedule({data}: {data: ScheduleItem[]}) {
   return <div className="bg-gradient-to-b from-sky-200 to-pink-200 rounded-xl">
     <div className="flex flex-row bg-[url(/background.png)] bg-cover">
@@ -66,22 +72,22 @@ function Schedule({data}: {data: ScheduleItem[]}) {
         <p className="text-8xl pb-8 text-center text-stroke-16 [-webkit-text-stroke-color:transparent] text-white bg-clip-text bg-gradient-to-b from-pink-300 to-blue-200 z-10">
           Schedule
         </p>
-        {data.map(({ date, time, title, color }) => (
-          <div key={title} className={`flex-1 text-stroke-1 text-stroke-color-yellow-900`}>
-            <h2 className="text-5xl font-semibold text-white">
-              {date}
+        {data.map(({ date, title, color }) => (
+          <div key={title} className={`flex-1 text-stroke-color-yellow-900`}>
+            <h2 className="text-5xl font-semibold text-stroke-1 text-white">
+                {date.format("dddd, MMMM Do")}
             </h2>
             <div className={"flex flex-row pl-3 text-center"}>
               <div className="grid-row text-4xl text-yellow-900">
                 <p>
-                  {time}
+                    {date.format("h A")}
                 </p>
                 <p>
                   PST
                 </p>
               </div>
               <p
-                className="pl-2 text-4xl content-center"
+                className="pl-2 text-4xl text-stroke-2 content-center"
                 style={{ color: color }}
               >
               {title}
@@ -97,13 +103,12 @@ function Editor({ data, setItems }: { data: ScheduleItem[]; setItems: React.Disp
   const handleDelete = (idx: number) => {
     setItems(prev => prev.filter((_, i) => i !== idx));
     if (editIndex === idx) {
-      setForm({ date: "", time: "", title: "", color: "" });
+      setForm({ date: moment(), title: "", color: "" });
       setEditIndex(null);
     }
   };
   const [form, setForm] = useState({
-    date: "",
-    time: "",
+    date: moment() as Moment,
     title: "",
     color: ""
   });
@@ -114,9 +119,13 @@ function Editor({ data, setItems }: { data: ScheduleItem[]; setItems: React.Disp
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const handleDateChange = (date: Moment | Moment[]) => {
+    setForm(prev => ({ ...prev, date: Array.isArray(date) ? date[1] : date }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.date || !form.time || !form.title || !form.color) {
+    if (!form.date || !form.title || !form.color) {
       setError("All fields are required.");
       return;
     }
@@ -125,7 +134,7 @@ function Editor({ data, setItems }: { data: ScheduleItem[]; setItems: React.Disp
     } else {
       setItems(prev => [...prev, { ...form }]);
     }
-    setForm({ date: "", time: "", title: "", color: "" });
+    setForm({ date: moment(), title: "", color: "" });
     setEditIndex(null);
     setError(null);
   };
@@ -137,28 +146,13 @@ function Editor({ data, setItems }: { data: ScheduleItem[]; setItems: React.Disp
   };
 
   return (
-    <div className="bg-white/70 rounded-xl p-4 w-[500px] max-w-full">
+    <div className="bg-white/70 rounded-xl p-4 w-[800px] max-w-full text-black">
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-        <input
-          name="date"
-          type="text"
-          className="border rounded p-2 w-full text-black"
-          placeholder="Date (e.g. Saturday September 20th)"
-          value={form.date}
-          onChange={handleChange}
-        />
-        <input
-          name="time"
-          type="text"
-          className="border rounded p-2 w-full text-black"
-          placeholder="Time (e.g. 9 AM)"
-          value={form.time}
-          onChange={handleChange}
-        />
+        <PickerPanel<Moment> generateConfig={momentGenerateConfig} value={form.date ? form.date : moment()} onChange={handleDateChange} locale={enUS} showTime={{ showSecond: false }} />
         <input
           name="title"
           type="text"
-          className="border rounded p-2 w-full text-black"
+          className="border rounded p-2 w-full"
           placeholder="Title (e.g. Gamin!)"
           value={form.title}
           onChange={handleChange}
@@ -166,7 +160,7 @@ function Editor({ data, setItems }: { data: ScheduleItem[]; setItems: React.Disp
         <input
           name="color"
           type="text"
-          className="border rounded p-2 w-full text-black"
+          className="border rounded p-2 w-full"
           placeholder="Color (e.g. red, hsl(30deg 82% 43%), oklch(97.3% 0.071 103.193), #009900)"
           value={form.color}
           onChange={handleChange}
@@ -186,7 +180,7 @@ function Editor({ data, setItems }: { data: ScheduleItem[]; setItems: React.Disp
         <ul className="space-y-2">
           {data.map((item, idx) => (
             <li key={item.title + idx} className="flex items-center justify-between bg-gray-200 text-gray-800 rounded p-2">
-              <span>{item.date} - {item.time} - {item.title}</span>
+              <span>{item.date.format("YYYY-MM-DD HH:mm")} - &lt;t:{item.date.format("X")}:F&gt; - {item.title}</span>
               <div className="flex gap-2">
                 <button
                   className="px-2 py-1 bg-yellow-400 rounded text-xs"
