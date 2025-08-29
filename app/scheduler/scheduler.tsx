@@ -148,7 +148,7 @@ function Editor({ data, setItems }: { data: ScheduleItem[]; setItems: React.Disp
   return (
     <div className="bg-white/70 rounded-xl p-4 w-[800px] max-w-full text-black">
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-        <PickerPanel<Moment> generateConfig={momentGenerateConfig} value={form.date ? form.date : moment()} onChange={handleDateChange} locale={enUS} showTime={{ showSecond: false }} />
+        <PickerPanel<Moment> generateConfig={momentGenerateConfig} value={form.date ? form.date : moment()} onChange={handleDateChange} locale={enUS} showTime={{ showSecond: false, minuteStep: 15, use12Hours: true }} />
         <input
           name="title"
           type="text"
