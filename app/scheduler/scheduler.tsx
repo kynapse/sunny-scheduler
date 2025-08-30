@@ -161,7 +161,7 @@ function Editor({ data, setItems }: { data: ScheduleItem[]; setItems: React.Disp
           name="color"
           type="text"
           className="border rounded p-2 w-full"
-          placeholder="Color (e.g. red, hsl(30deg 82% 43%), oklch(97.3% 0.071 103.193), #009900)"
+          placeholder="Color (e.g. red, hsl(30deg 82% 43%), oklch(97% 0.071 103), #009900)"
           value={form.color}
           onChange={handleChange}
         />
