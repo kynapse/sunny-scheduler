@@ -8,12 +8,16 @@ import moment from "moment";
 import enUS from "rc-picker/lib/locale/en_US";
 import momentGenerateConfig from "rc-picker/lib/generate/moment";
 import 'rc-picker/assets/index.css';
+import { ColorPicker } from "./ColorPicker";
 
 type ScheduleItem = { date: Moment; title: string; color: string };
 
 export function Scheduler() {
   const [items, setItems] = useState(scheduleData);
   const ref = useRef<HTMLDivElement>(null);
+  const [bgFromColor, setBgFromColor] = useState("#f0f4ff");
+  const [bgToColor, setBgToColor] = useState("#cbebff");
+  const [isRelative, setIsRelative] = useState(true);
 
   const handleDownload = useCallback(() => {
     if (ref.current) {
@@ -31,7 +35,7 @@ export function Scheduler() {
   }, [ref]);
 
   return (
-    <main className="flex items-center justify-center pt-16 pb-4">
+    <main className="flex items-center justify-center pt-16 pb-4 text-black">
       <div className="flex-1 flex flex-col items-center gap-8 min-h-0">
         <header className="flex flex-col items-center gap-9">
           <div className="w-[500px] max-w-[100vw] p-4">
@@ -40,13 +44,36 @@ export function Scheduler() {
             </h1>
           </div>
         </header>
-        <div >
+        <div>
           <Editor data={items} setItems={setItems} />
+          <div>
+            <label className="font-semibold">BG Color 1:</label>
+            <ColorPicker
+              value={bgFromColor}
+              onChange={setBgFromColor}
+            />
+          </div>
+          <label className="font-semibold">BG Color 2:</label>
+          <div className="flex flex-row">
+            <p className="mr-2">Relative Background Color: </p>
+            <input type="checkbox" aria-label="relative background color" checked={isRelative} onChange={e => {setIsRelative(e.target.checked); setBgToColor("60")}} />
+          </div>
+            {isRelative ? (
+              <>
+                <input type="range" min={0} max={365} value={bgToColor} onChange={e => setBgToColor(e.target.value)} />
+                <input type="text" value={bgToColor} onChange={e => setBgToColor(e.target.value)} />
+              </>
+            ) : (
+              <ColorPicker
+                value={bgToColor}
+                onChange={setBgToColor}
+              />
+            )}
         </div>
         <div className="flex flex-col items-center">
           <div ref={ref}>
             <div className="p-4 bg-white">
-              <Schedule data={items} />
+              <Schedule data={items} bgFromColor={bgFromColor} bgToColor={bgToColor} isRelative={isRelative} />
             </div>
           </div>
           <button
@@ -61,8 +88,8 @@ export function Scheduler() {
   );
 }
 
-function Schedule({data}: {data: ScheduleItem[]}) {
-  return <div className="bg-gradient-to-b from-sky-200 to-pink-200 rounded-xl">
+function Schedule({data, bgFromColor, bgToColor, isRelative}: {data: ScheduleItem[]; bgFromColor: string; bgToColor: string; isRelative: boolean}) {
+  return <div className="rounded-xl" style={{ background: `linear-gradient(to bottom, ${bgFromColor}, ${isRelative ? `oklch(from ${bgFromColor} L C calc(H + ${bgToColor}))` : bgToColor})` }}>
     <div className="flex flex-row bg-[url(/background.png)] bg-cover">
       <img
         src={chibiSunny}
@@ -146,7 +173,7 @@ function Editor({ data, setItems }: { data: ScheduleItem[]; setItems: React.Disp
   };
 
   return (
-    <div className="bg-white/70 rounded-xl p-4 w-[800px] max-w-full text-black">
+    <div className="bg-white/70 rounded-xl p-4 w-[800px] max-w-full">
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <PickerPanel<Moment> generateConfig={momentGenerateConfig} value={form.date ? form.date : moment()} onChange={handleDateChange} locale={enUS} showTime={{ showSecond: false, minuteStep: 15, use12Hours: true }} />
         <input
@@ -164,6 +191,10 @@ function Editor({ data, setItems }: { data: ScheduleItem[]; setItems: React.Disp
           placeholder="Color (e.g. red, hsl(30deg 82% 43%), oklch(97% 0.071 103), #009900)"
           value={form.color}
           onChange={handleChange}
+        />
+        <ColorPicker
+          value={form.color}
+          onChange={color => setForm(prev => ({ ...prev, color }))}
         />
         <button type="submit" className="bg-blue-500 text-white rounded p-2 mt-2">
           {editIndex !== null ? "Save Changes" : "Add Schedule Item"}
