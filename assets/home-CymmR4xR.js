@@ -1,4 +1,4 @@
-import{a as u,v as ua,R as sn,x as So,y as bo,p as O,w as wo}from"./chunk-PVWAREVJ-PwEPPgFf.js";import{R as za,a as xo}from"./index-C-ck0Qsv.js";const Mo="/assets/chibi_sunny-BWQNk224.png";//! moment.js
+import{a as u,v as ua,R as sn,x as So,y as bo,p as O,w as wo}from"./chunk-PVWAREVJ-PwEPPgFf.js";import{R as za,a as xo}from"./index-C-ck0Qsv.js";const Mo="/sunny-scheduler/assets/chibi_sunny-BWQNk224.png";//! moment.js
 //! version : 2.30.1
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
 //! license : MIT
