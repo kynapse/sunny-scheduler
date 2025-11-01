@@ -15,8 +15,8 @@ export function ColorPicker({ value, onChange }: { value: string; onChange: (col
         type="text"
         value={value}
         onChange={e => onChange(e.target.value)}
-        className="border rounded p-1 w-32"
-        placeholder="#f0f4ff" />
+        className="border rounded p-1 grow"
+        placeholder="Color (e.g. red, hsl(30deg 82% 43%), oklch(97% 0.071 103), #009900)" />
     </div>
   );
 }

@@ -15,7 +15,7 @@ type ScheduleItem = { date: Moment; title: string; color: string };
 export function Scheduler() {
   const [items, setItems] = useState(scheduleData);
   const ref = useRef<HTMLDivElement>(null);
-  const [bgFromColor, setBgFromColor] = useState("#f0f49f");
+  const [bgFromColor, setBgFromColor] = useState("hsl(63, 79%, 79%, 1.0)");
   const [bgToColor, setBgToColor] = useState("120");
   const [isRelative, setIsRelative] = useState(true);
 
@@ -183,14 +183,6 @@ function Editor({ data, setItems }: { data: ScheduleItem[]; setItems: React.Disp
           className="border rounded p-2 w-full"
           placeholder="Title (e.g. Gamin!)"
           value={form.title}
-          onChange={handleChange}
-        />
-        <input
-          name="color"
-          type="text"
-          className="border rounded p-2 w-full"
-          placeholder="Color (e.g. red, hsl(30deg 82% 43%), oklch(97% 0.071 103), #009900)"
-          value={form.color}
           onChange={handleChange}
         />
         <ColorPicker
