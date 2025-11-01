@@ -1,10 +1,7 @@
-import type React from "react";
-
-// Simple ColorPicker component
 export function ColorPicker({ value, onChange }: { value: string; onChange: (color: string) => void; }) {
   var inputValue = value;
-  if (inputValue.startsWith("rgb")) {
-    inputValue = "#" + inputValue.replace("rgb(", "").replace(")", "").split(",").map(c => parseInt(c.trim()).toString(16).padStart(2, "0")).join("");
+  if (value.startsWith("rgb")) {
+    inputValue = "#" + value.replace("rgb(", "").replace(")", "").split(",").map(c => parseInt(c.trim()).toString(16).padStart(2, "0")).join("");
   }
   return (
     <div className="flex items-center gap-2 mb-2">

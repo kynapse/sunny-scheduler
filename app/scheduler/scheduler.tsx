@@ -15,8 +15,8 @@ type ScheduleItem = { date: Moment; title: string; color: string };
 export function Scheduler() {
   const [items, setItems] = useState(scheduleData);
   const ref = useRef<HTMLDivElement>(null);
-  const [bgFromColor, setBgFromColor] = useState("#f0f4ff");
-  const [bgToColor, setBgToColor] = useState("#cbebff");
+  const [bgFromColor, setBgFromColor] = useState("#f0f49f");
+  const [bgToColor, setBgToColor] = useState("120");
   const [isRelative, setIsRelative] = useState(true);
 
   const handleDownload = useCallback(() => {
@@ -60,8 +60,9 @@ export function Scheduler() {
           </div>
             {isRelative ? (
               <>
-                <input type="range" min={0} max={365} value={bgToColor} onChange={e => setBgToColor(e.target.value)} />
-                <input type="text" value={bgToColor} onChange={e => setBgToColor(e.target.value)} />
+                <label htmlFor="hueRotation">Hue Rotation</label>
+                <input className="mx-2" id="hueRotation" type="range" min={0} max={365} value={bgToColor} onChange={e => setBgToColor(e.target.value)} />
+                <input type="text" aria-label="Hue rotation value" value={bgToColor} onChange={e => setBgToColor(e.target.value)} />
               </>
             ) : (
               <ColorPicker
