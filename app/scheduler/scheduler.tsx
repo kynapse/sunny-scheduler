@@ -106,7 +106,7 @@ function Schedule({data, bgFromColor, bgToColor, isRelative}: {data: ScheduleIte
                 {date.format("dddd, MMMM Do")}
             </h2>
             <div className={"flex flex-row pl-3 text-center"}>
-              <div className="grid-row text-4xl text-yellow-900">
+              <div className="grid-row text-4xl text-yellow-900 content-center">
                 <p>
                     {date.format("h A")}
                 </p>
@@ -115,10 +115,15 @@ function Schedule({data, bgFromColor, bgToColor, isRelative}: {data: ScheduleIte
                 </p>
               </div>
               <p
-                className="pl-2 text-4xl text-stroke-2 content-center"
+                className="pl-2 text-4xl text-stroke-2 content-center text-left"
                 style={{ color: color }}
               >
-              {title}
+              {title.split("\n").map((line, idx) => (
+                <React.Fragment key={idx}>
+                  {line}
+                  <br />
+                </React.Fragment>
+              ))}
               </p>
             </div>
           </div>
@@ -176,14 +181,20 @@ function Editor({ data, setItems }: { data: ScheduleItem[]; setItems: React.Disp
   return (
     <div className="bg-white/70 rounded-xl p-4 w-[800px] max-w-full">
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-        <PickerPanel<Moment> generateConfig={momentGenerateConfig} value={form.date ? form.date : moment()} onChange={handleDateChange} locale={enUS} showTime={{ showSecond: false, minuteStep: 15, use12Hours: true }} />
-        <input
+        <PickerPanel<Moment>
+          generateConfig={momentGenerateConfig}
+          value={form.date ? form.date : moment()}
+          onChange={handleDateChange}
+          locale={enUS}
+          showTime={{ showSecond: false, minuteStep: 15, use12Hours: true }}
+        />
+        <textarea
           name="title"
-          type="text"
-          className="border rounded p-2 w-full"
+          className="border rounded p-2 w-full resize-y"
           placeholder="Title (e.g. Gamin!)"
           value={form.title}
-          onChange={handleChange}
+          onChange={e => setForm(prev => ({ ...prev, title: e.target.value }))}
+          rows={4}
         />
         <ColorPicker
           value={form.color}
